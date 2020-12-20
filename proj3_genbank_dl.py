@@ -45,10 +45,11 @@ if gene == 'rbcL':
 	full_gene = "ribulose-1,5-bisphosphate carboxylase/oxygenase"
 else:
 	full_gene = "maturase K"
-file = [i.strip() for i in open(sys.argv[2].strip()).readlines()]
+
+file = [i.strip() for i in open(sys.argv[2].strip()).readlines()] #input list
 
 # first round of queries against GenBank
-for i in file:
+'''for i in file:
 	#removing variety and subspecies to increase chance of returning hits
 	#and then querying against GenBank
 	
@@ -75,12 +76,12 @@ for i in file:
 		-element Title AccessionVersion Slen > ' + "_".join(i.split())+".txt"
 		
 		#call command
-		subprocess.call(command, shell=True)
+		subprocess.call(command, shell=True)'''
 				
 # second round to redo those that were missed/file is empty from first round query
 # grabbing ALL seqs for species in case gene was missed from initial query
 
-file2 = [" ".join(i.replace(".txt", "").split('_')) for i in os.listdir(".") if \
+'''file2 = [" ".join(i.replace(".txt", "").split('_')) for i in os.listdir(".") if \
 os.path.getsize(i) == 0 and not os.path.isdir(i)]
 
 for i in file2:
@@ -109,11 +110,11 @@ for i in file2:
 		"_".join(i.split())+"_2.txt"
 		
 		#run command
-		subprocess.call(command, shell=True)
+		subprocess.call(command, shell=True)'''
 
-####### record species with no sequences in genbank #######
+###### record species with no sequences in genbank #######
 
-# find empty files
+'''# find empty files
 empties = Counter([" ".join(i.replace("_2", "").split('_')) \
 for i in os.listdir(".") if os.path.getsize(i) == 0])
 
@@ -122,7 +123,7 @@ no_seq_gb = sorted([i for i in empties.keys() if empties[i] == 2])
 
 with open("LISTS/no_seq_genbank.txt", "w+") as w:
         w.write("\n".join(no_seq_gb))
-w.close()
+w.close()'''
 
 ####### determine which are partial seqs, seqs from complete genomes #######
 ####### and species with no gene hit in Genbank #######
@@ -140,15 +141,80 @@ no_hits_genbank = open("LISTS/"+gene+"_no_hits_genbank.txt", "a+")
 
 # find complete genomes or partials with rbcL in non-subsp./var. plants
 # record those with complete genomes
-# if no complete genome, determine if rbcL actually in sequences; if so, record the longest one
+# if no complete genome, determine if rbcL actually in sequences; 
+# if so, record the longest one in partials file
 
-non_sb_var = [i for i in os.listdir(".") if os.path.getsize(i) > 0 and 'subsp.' not in i and 'var.' not in i and i != 'LISTS' and i != 'DOWNLOADS' and 'get_rbcL.py' not in i and 'Project' not in i]
+
+non_sb_var = [i for i in os.listdir(".") if os.path.getsize(i) > 0 and \ 
+'.txt' in i and 'subsp.' not in i and 'var.' not in i and not os.path.isdir(i)]
+
+
+for i in non_sb_var:
+	completes = [] # list to store complete genomes
+	partials = [] # list to store partials/complete cds
+	par_genome = [] # list to store for single instance for Pediomelum tenuiflorum
+	
+	r = [j.strip().split("\t") for j in open(i).readlines()] # read in file
+	
+	for j in r: # look for complete genomes
+		if 'complete genome' in j[0] and 'chloroplast' in j[0]:
+			completes.append(j)
+		elif 'rbcL' in j[0] or 'ribulose-1,5-bisphosphate' in j[0]:
+			partials.append(j)
+		elif 'partial genome' in j[0]:
+			par_genome.append(j)
+			
+	if len(completes) > 0: #check for any complete genomes
+		
+		if len(completes) > 1: #check if multiple complete genomes
+			found = False
+			for c in completes:
+				if 'NC_' in c[1]: #check for reference genome
+					store = c
+					found = True
+			if found == True: #if reference genome found, record accession
+				comp_dl.write("\t".join(store)+"\n")
+			else: #no reference genome, but still multiple complete genomes;
+			#determine which complete genome is the longest then
+				longest = 0
+				for c in completes:
+					if int(c[-1]) > longest:
+						longest = int(c[-1])
+						store = c
+						comp_dl.write("\t".join(store)+"\n")
+		
+		#if only one complete genome found
+		else:
+		comp_dl.write("\t".join(completes[0])+"\n")
+
+	elif len(partials) > 0: #find longest partials
+		if len(partials) == 1:
+			partial_dl.write("\t".join(partials[0])+"\n")
+		else: #if multiple partials, find longest one
+			longest = 0
+			for p in partials:
+				if int(p[-1]) > longest:
+				longest = int(p[-1])
+				store = p
+			partial_dl.write("\t".join(store)+"\n")
+	elif len(par_genome) > 0:   #for single instance for Psoralidium/Pediomelum tenuiflorum
+		comp_dl.write("\t".join(par_genome[1])+"\n")
+	else:
+		print(i)
+
+
+
+# find complete genomes or partials with rbcL in non-subsp./var. plants
+	# check if subsp./var. found in seqs returned for those species
+		# if so, check for complete genome
+		# if no complete genome, determine if rbcL actually in sequences; 
+		#if so, record the longest one
+
+	# if subsp./var. not found in seqs returned for those species, 
+		#find the longest non-subsp/var rbcL and make note
+		
 				
-				
-				
-				
-				
-				
+
 				
 				
 				
