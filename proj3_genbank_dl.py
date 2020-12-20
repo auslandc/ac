@@ -41,6 +41,7 @@ if not os.path.isdir('DOWNLOADS'):
 
 #read in command line arguments
 gene = sys.argv[1]
+
 if gene == 'rbcL':
 	full_gene = "ribulose-1,5-bisphosphate carboxylase/oxygenase"
 else:
@@ -131,12 +132,18 @@ w.close()'''
 #initialize lists of accessions for download
 
 #seqs from complete genome
+if os.path.isfile("DOWNLOADS/"+gene+"_complete_genomes_download.txt"):
+	os.remove("DOWNLOADS/"+gene+"_complete_genomes_download.txt")
 comp_dl = open("DOWNLOADS/"+gene+"_complete_genomes_download.txt", "a+")
 
 #parital seqs
+if os.path.isfile("DOWNLOADS/"+gene+"_partials_download.txt"):
+	os.remove("DOWNLOADS/"+gene+"_partials_download.txt")
 partial_dl = open("DOWNLOADS/"+gene+"_partials_download.txt", "a+")
 
 #no complete genomes or gene hits in genbank
+if os.path.isfile("LISTS/"+gene+"_no_hits_genbank.txt"):
+	os.remove("LISTS/"+gene+"_no_hits_genbank.txt")
 no_hits_genbank = open("LISTS/"+gene+"_no_hits_genbank.txt", "a+") 
 
 # find complete genomes or partials with rbcL in non-subsp./var. plants
@@ -145,7 +152,7 @@ no_hits_genbank = open("LISTS/"+gene+"_no_hits_genbank.txt", "a+")
 # if so, record the longest one in partials file
 
 
-non_sb_var = [i for i in os.listdir(".") if os.path.getsize(i) > 0 and \ 
+non_sb_var = [i for i in os.listdir(".") if os.path.getsize(i) > 0 and \
 '.txt' in i and 'subsp.' not in i and 'var.' not in i and not os.path.isdir(i)]
 
 
@@ -156,7 +163,7 @@ for i in non_sb_var:
 	
 	r = [j.strip().split("\t") for j in open(i).readlines()] # read in file
 	
-	for j in r: # look for complete genomes
+	for j in r:
 		if 'complete genome' in j[0] and 'chloroplast' in j[0]:
 			completes.append(j)
 		elif 'rbcL' in j[0] or 'ribulose-1,5-bisphosphate' in j[0]:
@@ -197,8 +204,11 @@ for i in non_sb_var:
 					longest = int(p[-1])
 					store = p
 			partial_dl.write("\t".join(store)+"\n")
-	elif len(par_genome) > 0:   #for single instance for Psoralidium/Pediomelum tenuiflorum
+	
+	#for single instance for Psoralidium/Pediomelum tenuiflorum
+	elif len(par_genome) > 0: 
 		comp_dl.write("\t".join(par_genome[1])+"\n")
+	
 	else: 
 		#so at this point, these are essentially genomes that had no hits in first round,
 		#and then had no hits in second round. 
@@ -208,9 +218,29 @@ for i in non_sb_var:
 		no_hits_genbank.write(i.replace("_2", "")+"\n")
 
 
+# find complete genomes or partials with rbcL in subsp./var. plants
 
-# find complete genomes or partials with rbcL in non-subsp./var. plants
+sb_var = [i for i in [i for i in os.listdir('.') if 'subsp.' in i or 'var.' in i]\
+ if os.path.getsize(i) > 0 and '.txt' in i and not os.path.isdir(i)]
+
+for i in sb_var:
+	
+	sv = i.split("_")[3].replace(".txt", "") #record var./subsp.
+	completes = [] # list to store complete genomes
+	partials = [] # list to store partials/complete cds
+	
+	r = [j.strip().split("\t") for j in open(i).readlines()] # read in file
+	
 	# check if subsp./var. found in seqs returned for those species
+	
+	sv_hits = [] #hits to specific var/subsp
+	
+	for line in r:
+		if sv in line:
+			sv_hits.append(line)
+			
+	if len(hits) > 0:
+		print(i_
 		# if so, check for complete genome
 		# if no complete genome, determine if rbcL actually in sequences; 
 		#if so, record the longest one
