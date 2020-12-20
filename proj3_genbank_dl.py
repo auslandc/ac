@@ -260,7 +260,7 @@ for i in sb_var:
 		partials = [] # list to store partials/complete cds
 		par_genome = [] # list to store 'partial genomes'
 		
-		for line in r:
+		for j in r:
 			if 'complete genome' in j[0] and 'chloroplast' in j[0]:
 				completes.append(j)
 			elif 'rbcL' in j[0] or 'ribulose-1,5-bisphosphate' in j[0]:
