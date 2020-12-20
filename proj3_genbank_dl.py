@@ -32,6 +32,7 @@ import subprocess
 import sys
 import os
 from collections import Counter
+import re
 
 ####initialize directories
 if not os.path.isdir('LISTS'):
@@ -246,14 +247,20 @@ for i in sb_var:
 	
 	# check if subsp./var. found in seqs returned for those species
 	
+	
 	sv_hits = [] #hits to specific var/subsp
 	
 	for line in r:
-		if sv in line:
+		#if sv in line: ####REWRITE using regex instead!!!!!
+		if re.search(sv, line, re.IGNORECASE):
 			sv_hits.append(line)
 			
 	if len(sv_hits) == 0:
 		no_varsubsp_genbank.write(i.replace("_2", "")+"\n")
+		
+		#first check if species has been done already in completes or partial file
+		
+		
 		#check for completes, genes and partial genomes of non-matches
 		#record still under var/subsp from list though for recordkeeping
 		completes = [] # list to store complete genomes
@@ -321,9 +328,17 @@ for i in sb_var:
 			#will record in 'no_hits_to_genbank.txt'
 			no_hits_genbank.write(i.replace("_2", "")+"\n")
 
-	else:
-		print("CONTACT CATIE FOR SCRIPT UPDATE!!!!\n DO NOT PROCEED")
-		exit()
+	elif len(sv_hits) > 1:
+		#print("CONTACT CATIE FOR SCRIPT UPDATE!!!!\n DO NOT PROCEED")
+		print(i)
+		'''with the 2020 data, NONE of the species with var./subsp. identified 
+		had hits in GenBank, so instead referece genomes or longest rbcL genes 
+		from plastids of the same species were used instead. In the event that 
+		this script is used and there are hits to a var./subsp., contact me 
+		and I will update script to account for this case. OR you can manually 
+		extract out the genes for these cases and comment out the line of code 
+		below to keep using script.'''
+		#exit()
 		
 
 	
