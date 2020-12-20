@@ -159,7 +159,7 @@ non_sb_var = [i for i in os.listdir(".") if os.path.getsize(i) > 0 and \
 for i in non_sb_var:
 	completes = [] # list to store complete genomes
 	partials = [] # list to store partials/complete cds
-	par_genome = [] # list to store for single instance for Pediomelum tenuiflorum
+	par_genome = [] # list to store 'partial genomes'
 	
 	r = [j.strip().split("\t") for j in open(i).readlines()] # read in file
 	
@@ -194,8 +194,19 @@ for i in non_sb_var:
 		else:
 			comp_dl.write("\t".join(completes[0])+"\n")
 
+	elif len(par_genome) > 0:
+		if len(par_genome) == 1: #if one gene found
+			comp.write("\t".join(par_genome[0])+"\n")
+		else:
+			longest = 0
+			for c in par_genome:
+				if int(c[-1]) > longest:
+					longest = int(c[-1])
+					store = c
+			comp_dl.write("\t".join(store)+"\n")
+
 	elif len(partials) > 0: #find longest partials
-		if len(partials) == 1:
+		if len(partials) == 1: #if one gene found
 			partial_dl.write("\t".join(partials[0])+"\n")
 		else: #if multiple partials, find longest one
 			longest = 0
@@ -205,9 +216,7 @@ for i in non_sb_var:
 					store = p
 			partial_dl.write("\t".join(store)+"\n")
 	
-	#for single instance for Psoralidium/Pediomelum tenuiflorum
-	elif len(par_genome) > 0: 
-		comp_dl.write("\t".join(par_genome[1])+"\n")
+
 	
 	else: 
 		#so at this point, these are essentially genomes that had no hits in first round,
@@ -239,8 +248,8 @@ for i in sb_var:
 		if sv in line:
 			sv_hits.append(line)
 			
-	if len(hits) > 0:
-		print(i_
+	if len(sv_hits) > 0:
+		print(i)
 		# if so, check for complete genome
 		# if no complete genome, determine if rbcL actually in sequences; 
 		#if so, record the longest one
