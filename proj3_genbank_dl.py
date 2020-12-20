@@ -194,13 +194,18 @@ for i in non_sb_var:
 			longest = 0
 			for p in partials:
 				if int(p[-1]) > longest:
-				longest = int(p[-1])
-				store = p
+					longest = int(p[-1])
+					store = p
 			partial_dl.write("\t".join(store)+"\n")
 	elif len(par_genome) > 0:   #for single instance for Psoralidium/Pediomelum tenuiflorum
 		comp_dl.write("\t".join(par_genome[1])+"\n")
-	else:
-		print(i)
+	else: 
+		#so at this point, these are essentially genomes that had no hits in first round,
+		#and then had no hits in second round. 
+		#Those that had no hits in '_2' round means no hits in first either 
+		#(hence need for second round)
+		#will record in 'no_hits_to_genbank.txt'
+		no_hits_genbank.write(i.replace("_2", "")+"\n")
 
 
 
