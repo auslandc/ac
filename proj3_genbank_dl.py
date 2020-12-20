@@ -196,7 +196,7 @@ for i in non_sb_var:
 
 	elif len(par_genome) > 0:
 		if len(par_genome) == 1: #if one gene found
-			comp.write("\t".join(par_genome[0])+"\n")
+			comp_dl.write("\t".join(par_genome[0])+"\n")
 		else:
 			longest = 0
 			for c in par_genome:
@@ -216,8 +216,6 @@ for i in non_sb_var:
 					store = p
 			partial_dl.write("\t".join(store)+"\n")
 	
-
-	
 	else: 
 		#so at this point, these are essentially genomes that had no hits in first round,
 		#and then had no hits in second round. 
@@ -231,6 +229,12 @@ for i in non_sb_var:
 
 sb_var = [i for i in [i for i in os.listdir('.') if 'subsp.' in i or 'var.' in i]\
  if os.path.getsize(i) > 0 and '.txt' in i and not os.path.isdir(i)]
+
+
+#list of plants with sequences found but no match to var./subsp.
+if os.path.isfile("LISTS/"+gene+"_no_varsubsp_genbank.txt"):
+	os.remove("LISTS/"+gene+"_no_varsubsp_genbank.txt")
+no_varsubsp_genbank = open("LISTS/"+gene+"_no_varsubsp_genbank.txt", "a+") 
 
 for i in sb_var:
 	
@@ -248,15 +252,81 @@ for i in sb_var:
 		if sv in line:
 			sv_hits.append(line)
 			
-	if len(sv_hits) > 0:
-		print(i)
-		# if so, check for complete genome
-		# if no complete genome, determine if rbcL actually in sequences; 
-		#if so, record the longest one
-
-	# if subsp./var. not found in seqs returned for those species, 
-		#find the longest non-subsp/var rbcL and make note
+	if len(sv_hits) == 0:
+		no_varsubsp_genbank.write(i.replace("_2", "")+"\n")
+		#check for completes, genes and partial genomes of non-matches
+		#record still under var/subsp from list though for recordkeeping
+		completes = [] # list to store complete genomes
+		partials = [] # list to store partials/complete cds
+		par_genome = [] # list to store 'partial genomes'
 		
+		for line in r:
+			if 'complete genome' in j[0] and 'chloroplast' in j[0]:
+				completes.append(j)
+			elif 'rbcL' in j[0] or 'ribulose-1,5-bisphosphate' in j[0]:
+				partials.append(j)
+			elif 'partial genome' in j[0]:
+				par_genome.append(j)
+				
+		if len(completes) > 0: #check for any complete genomes
+		
+			if len(completes) > 1: #check if multiple complete genomes
+				found = False
+				for c in completes:
+					if 'NC_' in c[1]: #check for reference genome
+					store = c
+					found = True
+				if found == True: #if reference genome found, record accession
+					comp_dl.write("\t".join(store)+"\n")
+				else: #no reference genome, but still multiple complete genomes;
+				#determine which complete genome is the longest then
+					longest = 0
+					for c in completes:
+						if int(c[-1]) > longest:
+							longest = int(c[-1])
+							store = c
+					comp_dl.write("\t".join(store)+"\n")
+
+			#if only one complete genome found
+			else:
+				comp_dl.write("\t".join(completes[0])+"\n")
+				
+		elif len(par_genome) > 0:
+			if len(par_genome) == 1: #if one gene found
+				comp_dl.write("\t".join(par_genome[0])+"\n")
+			else:
+				longest = 0
+				for c in par_genome:
+					if int(c[-1]) > longest:
+						longest = int(c[-1])
+						store = c
+				comp_dl.write("\t".join(store)+"\n")
+				
+		elif len(partials) > 0: #find longest partials
+			if len(partials) == 1: #if one gene found
+				partial_dl.write("\t".join(partials[0])+"\n")
+			else: #if multiple partials, find longest one
+				longest = 0
+				for p in partials:
+					if int(p[-1]) > longest:
+						longest = int(p[-1])
+						store = p
+				partial_dl.write("\t".join(store)+"\n")
+
+		else: 
+			#so at this point, these are essentially genomes that had no hits in first round,
+			#and then had no hits in second round. 
+			#Those that had no hits in '_2' round means no hits in first either 
+			#(hence need for second round)
+			#will record in 'no_hits_to_genbank.txt'
+			no_hits_genbank.write(i.replace("_2", "")+"\n")
+
+	else:
+		print("CONTACT CATIE FOR SCRIPT UPDATE!!!!\n DO NOT PROCEED")
+		exit()
+		
+
+	
 				
 
 				
