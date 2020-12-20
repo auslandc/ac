@@ -248,7 +248,7 @@ for i in sb_var:
 	#### check if subsp./var. found in seqs returned for those species ####
 	
 	#first check if subsp/var is the same as species name
-	if sv != i.split("_")[1]:
+	if not re.search(sv, i.split("_")[1], re.IGNORECASE):
 			
 		sv_hits = [] #hits to specific var/subsp
 		
