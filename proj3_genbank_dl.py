@@ -115,7 +115,7 @@ for i in file2:
 
 ###### record species with no sequences in genbank #######
 
-'''# find empty files
+# find empty files
 empties = Counter([" ".join(i.replace("_2", "").split('_')) \
 for i in os.listdir(".") if os.path.getsize(i) == 0])
 
@@ -124,7 +124,7 @@ no_seq_gb = sorted([i for i in empties.keys() if empties[i] == 2])
 
 with open("LISTS/no_seq_genbank.txt", "w+") as w:
         w.write("\n".join(no_seq_gb))
-w.close()'''
+w.close()
 
 ####### determine which are partial seqs, seqs from complete genomes #######
 ####### and species with no gene hit in Genbank #######
@@ -274,8 +274,8 @@ for i in sb_var:
 				found = False
 				for c in completes:
 					if 'NC_' in c[1]: #check for reference genome
-					store = c
-					found = True
+						store = c
+						found = True
 				if found == True: #if reference genome found, record accession
 					comp_dl.write("\t".join(store)+"\n")
 				else: #no reference genome, but still multiple complete genomes;
