@@ -245,15 +245,19 @@ for i in sb_var:
 	
 	r = [j.strip().split("\t") for j in open(i).readlines()] # read in file
 	
-	# check if subsp./var. found in seqs returned for those species
+	#### check if subsp./var. found in seqs returned for those species ####
 	
-	
-	sv_hits = [] #hits to specific var/subsp
-	
-	for line in r:
-		#if sv in line: ####REWRITE using regex instead!!!!!
-		if re.search(sv, line, re.IGNORECASE):
-			sv_hits.append(line)
+	#first check if subsp/var is the same as species name
+	if sv != i.split("_")[1]:
+			
+		sv_hits = [] #hits to specific var/subsp
+		
+		for line in r:
+			#if sv in line: ####REWRITE using regex instead!!!!!
+			if re.search(sv, line[0], re.IGNORECASE):
+				sv_hits.append(line)
+	else:
+		sv_hits = []
 			
 	if len(sv_hits) == 0:
 		no_varsubsp_genbank.write(i.replace("_2", "")+"\n")
