@@ -185,7 +185,7 @@ for i in non_sb_var:
 		
 		#if only one complete genome found
 		else:
-		comp_dl.write("\t".join(completes[0])+"\n")
+			comp_dl.write("\t".join(completes[0])+"\n")
 
 	elif len(partials) > 0: #find longest partials
 		if len(partials) == 1:
