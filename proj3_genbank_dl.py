@@ -191,7 +191,7 @@ for i in non_sb_var:
 					if int(c[-1]) > longest:
 						longest = int(c[-1])
 						store = c
-						comp_dl.write("\t".join([species]+store)+"\n")
+				comp_dl.write("\t".join([species]+store)+"\n")
 		
 		#if only one complete genome found
 		else:
@@ -398,7 +398,7 @@ for i in sb_var:
 			#Those that had no hits in '_2' round means no hits in first either 
 			#(hence need for second round)
 			#will record in 'no_hits_to_genbank.txt'
-			no_hits_genbank.write(i.replace("_2", "").replace(".txt", "").replace("_", " ")+"\n")
+			no_hits_genbank.write(Ni.replace("_2", "").replace(".txt", "").replace("_", " ")+"\n")
 			#if not, then go thru whole file again and look for generalized hits
 
 
