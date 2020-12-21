@@ -262,8 +262,6 @@ for i in sb_var:
 	if len(sv_hits) == 0:
 		no_varsubsp_genbank.write(i.replace("_2", "")+"\n")
 		
-		#first check if species has been done already in completes or partial file
-		
 		
 		#check for completes, genes and partial genomes of non-matches
 		#record still under var/subsp from list though for recordkeeping
@@ -332,20 +330,75 @@ for i in sb_var:
 			#will record in 'no_hits_to_genbank.txt'
 			no_hits_genbank.write(i.replace("_2", "")+"\n")
 
-	elif len(sv_hits) > 1:
-		#print("CONTACT CATIE FOR SCRIPT UPDATE!!!!\n DO NOT PROCEED")
-		print(i)
-		'''with the 2020 data, NONE of the species with var./subsp. identified 
-		had hits in GenBank, so instead referece genomes or longest rbcL genes 
-		from plastids of the same species were used instead. In the event that 
-		this script is used and there are hits to a var./subsp., contact me 
-		and I will update script to account for this case. OR you can manually 
-		extract out the genes for these cases and comment out the line of code 
-		below to keep using script.'''
-		#exit()
-		
+	else: # len(sv_hits) > 0:
+		#go thru all of the sv_hits; determine if there are any hits to gene or complete genome
+		completes = [] # list to store complete genomes
+		partials = [] # list to store partials/complete cds
+		par_genome = [] # list to store 'partial genomes'
 
-	
+		for j in sv_hits:
+			if 'complete genome' in j[0] and 'chloroplast' in j[0]:
+				completes.append(j)
+			elif 'rbcL' in j[0] or 'ribulose-1,5-bisphosphate' in j[0]:
+				partials.append(j)
+			elif 'partial genome' in j[0]:
+				par_genome.append(j)
+				
+		if len(completes) > 0: #check for any complete genomes
+		
+			if len(completes) > 1: #check if multiple complete genomes
+				found = False
+				for c in completes:
+					if 'NC_' in c[1]: #check for reference genome
+						store = c
+						found = True
+				if found == True: #if reference genome found, record accession
+					comp_dl.write("\t".join(store)+"\n")
+				else: #no reference genome, but still multiple complete genomes;
+				#determine which complete genome is the longest then
+					longest = 0
+					for c in completes:
+						if int(c[-1]) > longest:
+							longest = int(c[-1])
+							store = c
+					comp_dl.write("\t".join(store)+"\n")
+
+			#if only one complete genome found
+			else:
+				comp_dl.write("\t".join(completes[0])+"\n")
+		
+		elif len(par_genome) > 0:
+			if len(par_genome) == 1: #if one gene found
+				comp_dl.write("\t".join(par_genome[0])+"\n")
+			else:
+				longest = 0
+				for c in par_genome:
+					if int(c[-1]) > longest:
+						longest = int(c[-1])
+						store = c
+				comp_dl.write("\t".join(store)+"\n")
+				
+		elif len(partials) > 0: #find longest partials
+			if len(partials) == 1: #if one gene found
+				partial_dl.write("\t".join(partials[0])+"\n")
+			else: #if multiple partials, find longest one
+				longest = 0
+				for p in partials:
+					if int(p[-1]) > longest:
+						longest = int(p[-1])
+						store = p
+				partial_dl.write("\t".join(store)+"\n"
+		
+		else: 
+			#so at this point, these are essentially genomes that had no hits in first round,
+			#and then had no hits in second round. 
+			#Those that had no hits in '_2' round means no hits in first either 
+			#(hence need for second round)
+			#will record in 'no_hits_to_genbank.txt'
+			no_hits_genbank.write(i.replace("_2", "")+"\n")
+			#if not, then go thru whole file again and look for generalized hits
+
+
 				
 
 				
