@@ -162,6 +162,8 @@ for i in non_sb_var:
 	partials = [] # list to store partials/complete cds
 	par_genome = [] # list to store 'partial genomes'
 	
+	species = " ".join(i.replace(".txt", "").split("_"))
+	
 	r = [j.strip().split("\t") for j in open(i).readlines()] # read in file
 	
 	for j in r:
@@ -181,7 +183,7 @@ for i in non_sb_var:
 					store = c
 					found = True
 			if found == True: #if reference genome found, record accession
-				comp_dl.write("\t".join(store)+"\n")
+				comp_dl.write("\t".join([species]+store)+"\n")
 			else: #no reference genome, but still multiple complete genomes;
 			#determine which complete genome is the longest then
 				longest = 0
@@ -189,33 +191,33 @@ for i in non_sb_var:
 					if int(c[-1]) > longest:
 						longest = int(c[-1])
 						store = c
-						comp_dl.write("\t".join(store)+"\n")
+						comp_dl.write("\t".join([species]+store)+"\n")
 		
 		#if only one complete genome found
 		else:
-			comp_dl.write("\t".join(completes[0])+"\n")
+			comp_dl.write("\t".join([species]+completes[0])+"\n")
 
 	elif len(par_genome) > 0:
 		if len(par_genome) == 1: #if one gene found
-			comp_dl.write("\t".join(par_genome[0])+"\n")
+			comp_dl.write("\t".join([species]+par_genome[0])+"\n")
 		else:
 			longest = 0
 			for c in par_genome:
 				if int(c[-1]) > longest:
 					longest = int(c[-1])
 					store = c
-			comp_dl.write("\t".join(store)+"\n")
+			comp_dl.write("\t".join([species]+store)+"\n")
 
 	elif len(partials) > 0: #find longest partials
 		if len(partials) == 1: #if one gene found
-			partial_dl.write("\t".join(partials[0])+"\n")
+			partial_dl.write("\t".join([species]+partials[0])+"\n")
 		else: #if multiple partials, find longest one
 			longest = 0
 			for p in partials:
 				if int(p[-1]) > longest:
 					longest = int(p[-1])
 					store = p
-			partial_dl.write("\t".join(store)+"\n")
+			partial_dl.write("\t".join([species]+store)+"\n")
 	
 	else: 
 		#so at this point, these are essentially genomes that had no hits in first round,
@@ -223,7 +225,7 @@ for i in non_sb_var:
 		#Those that had no hits in '_2' round means no hits in first either 
 		#(hence need for second round)
 		#will record in 'no_hits_to_genbank.txt'
-		no_hits_genbank.write(i.replace("_2", "")+"\n")
+		no_hits_genbank.write(i.replace("_2", "").replace(".txt", "").replace("_", " ")+"\n")
 
 
 # find complete genomes or partials with rbcL in subsp./var. plants
@@ -239,6 +241,7 @@ no_varsubsp_genbank = open("LISTS/"+gene+"_no_varsubsp_genbank.txt", "a+")
 
 for i in sb_var:
 	
+	species = " ".join(i.replace(".txt", "").split("_"))
 	sv = i.split("_")[3].replace(".txt", "") #record var./subsp.
 	completes = [] # list to store complete genomes
 	partials = [] # list to store partials/complete cds
@@ -286,7 +289,7 @@ for i in sb_var:
 						store = c
 						found = True
 				if found == True: #if reference genome found, record accession
-					comp_dl.write("\t".join(store)+"\n")
+					comp_dl.write("\t".join([species]+store)+"\n")
 				else: #no reference genome, but still multiple complete genomes;
 				#determine which complete genome is the longest then
 					longest = 0
@@ -294,33 +297,33 @@ for i in sb_var:
 						if int(c[-1]) > longest:
 							longest = int(c[-1])
 							store = c
-					comp_dl.write("\t".join(store)+"\n")
+					comp_dl.write("\t".join([species]+store)+"\n")
 
 			#if only one complete genome found
 			else:
-				comp_dl.write("\t".join(completes[0])+"\n")
+				comp_dl.write("\t".join([species]+completes[0])+"\n")
 				
 		elif len(par_genome) > 0:
 			if len(par_genome) == 1: #if one gene found
-				comp_dl.write("\t".join(par_genome[0])+"\n")
+				comp_dl.write("\t".join([species]+par_genome[0])+"\n")
 			else:
 				longest = 0
 				for c in par_genome:
 					if int(c[-1]) > longest:
 						longest = int(c[-1])
 						store = c
-				comp_dl.write("\t".join(store)+"\n")
+				comp_dl.write("\t".join([species]+store)+"\n")
 				
 		elif len(partials) > 0: #find longest partials
 			if len(partials) == 1: #if one gene found
-				partial_dl.write("\t".join(partials[0])+"\n")
+				partial_dl.write("\t".join([species]+partials[0])+"\n")
 			else: #if multiple partials, find longest one
 				longest = 0
 				for p in partials:
 					if int(p[-1]) > longest:
 						longest = int(p[-1])
 						store = p
-				partial_dl.write("\t".join(store)+"\n")
+				partial_dl.write("\t".join([species]+store)+"\n")
 
 		else: 
 			#so at this point, these are essentially genomes that had no hits in first round,
@@ -328,7 +331,7 @@ for i in sb_var:
 			#Those that had no hits in '_2' round means no hits in first either 
 			#(hence need for second round)
 			#will record in 'no_hits_to_genbank.txt'
-			no_hits_genbank.write(i.replace("_2", "")+"\n")
+			no_hits_genbank.write(i.replace("_2", "").replace(".txt", "").replace("_", " ")+"\n")
 
 	else: # len(sv_hits) > 0:
 		#go thru all of the sv_hits; determine if there are any hits to gene or complete genome
@@ -353,7 +356,7 @@ for i in sb_var:
 						store = c
 						found = True
 				if found == True: #if reference genome found, record accession
-					comp_dl.write("\t".join(store)+"\n")
+					comp_dl.write("\t".join([species]+store)+"\n")
 				else: #no reference genome, but still multiple complete genomes;
 				#determine which complete genome is the longest then
 					longest = 0
@@ -361,33 +364,33 @@ for i in sb_var:
 						if int(c[-1]) > longest:
 							longest = int(c[-1])
 							store = c
-					comp_dl.write("\t".join(store)+"\n")
+					comp_dl.write("\t".join([species]+store)+"\n")
 
 			#if only one complete genome found
 			else:
-				comp_dl.write("\t".join(completes[0])+"\n")
+				comp_dl.write("\t".join([species]+completes[0])+"\n")
 		
 		elif len(par_genome) > 0:
 			if len(par_genome) == 1: #if one gene found
-				comp_dl.write("\t".join(par_genome[0])+"\n")
+				comp_dl.write("\t".join([species]+par_genome[0])+"\n")
 			else:
 				longest = 0
 				for c in par_genome:
 					if int(c[-1]) > longest:
 						longest = int(c[-1])
 						store = c
-				comp_dl.write("\t".join(store)+"\n")
+				comp_dl.write("\t".join([species]+store)+"\n")
 				
 		elif len(partials) > 0: #find longest partials
 			if len(partials) == 1: #if one gene found
-				partial_dl.write("\t".join(partials[0])+"\n")
+				partial_dl.write("\t".join([species]+partials[0])+"\n")
 			else: #if multiple partials, find longest one
 				longest = 0
 				for p in partials:
 					if int(p[-1]) > longest:
 						longest = int(p[-1])
 						store = p
-				partial_dl.write("\t".join(store)+"\n"
+				partial_dl.write("\t".join([species]+store)+"\n")
 		
 		else: 
 			#so at this point, these are essentially genomes that had no hits in first round,
@@ -395,7 +398,7 @@ for i in sb_var:
 			#Those that had no hits in '_2' round means no hits in first either 
 			#(hence need for second round)
 			#will record in 'no_hits_to_genbank.txt'
-			no_hits_genbank.write(i.replace("_2", "")+"\n")
+			no_hits_genbank.write(i.replace("_2", "").replace(".txt", "").replace("_", " ")+"\n")
 			#if not, then go thru whole file again and look for generalized hits
 
 
