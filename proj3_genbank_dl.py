@@ -169,7 +169,7 @@ for i in non_sb_var:
 	for j in r:
 		if 'complete genome' in j[0] and 'chloroplast' in j[0]:
 			completes.append(j)
-		elif 'rbcL' in j[0] or 'ribulose-1,5-bisphosphate' in j[0]:
+		elif gene in j[0] or full_gene in j[0]:
 			partials.append(j)
 		elif 'partial genome' in j[0]:
 			par_genome.append(j)
@@ -275,7 +275,7 @@ for i in sb_var:
 		for j in r:
 			if 'complete genome' in j[0] and 'chloroplast' in j[0]:
 				completes.append(j)
-			elif 'rbcL' in j[0] or 'ribulose-1,5-bisphosphate' in j[0]:
+			elif gene in j[0] or full_gene in j[0]:
 				partials.append(j)
 			elif 'partial genome' in j[0]:
 				par_genome.append(j)
@@ -342,7 +342,7 @@ for i in sb_var:
 		for j in sv_hits:
 			if 'complete genome' in j[0] and 'chloroplast' in j[0]:
 				completes.append(j)
-			elif 'rbcL' in j[0] or 'ribulose-1,5-bisphosphate' in j[0]:
+			elif gene in j[0] or full_gene in j[0]:
 				partials.append(j)
 			elif 'partial genome' in j[0]:
 				par_genome.append(j)
@@ -398,7 +398,7 @@ for i in sb_var:
 			#Those that had no hits in '_2' round means no hits in first either 
 			#(hence need for second round)
 			#will record in 'no_hits_to_genbank.txt'
-			no_hits_genbank.write(Ni.replace("_2", "").replace(".txt", "").replace("_", " ")+"\n")
+			no_hits_genbank.write(i.replace("_2", "").replace(".txt", "").replace("_", " ")+"\n")
 			#if not, then go thru whole file again and look for generalized hits
 
 
